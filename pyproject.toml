@@ -11,3 +11,7 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 
+authors = [
+    { name = "Omar MHAIMDAT", email = "omarmhaidmat@gmail.com" }
+]
+
