@@ -2,7 +2,8 @@ from whatlang import detect
 import timeit
 
 def main():
-    result = detect("Je parles français et anglais")
+
+    result = detect("Ĉu vi ne volas eklerni Esperanton? Bonvolu! Estas unu de la plej bonaj aferoj!")
     print(result)
 
 if __name__ == "__main__":
