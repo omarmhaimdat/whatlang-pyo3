@@ -14,6 +14,3 @@ classifiers = [
 authors = [
     { name = "Omar MHAIMDAT", email = "omarmhaidmat@gmail.com" }
 ]
-
-[tool.poetry]
-readme = "README.md"
