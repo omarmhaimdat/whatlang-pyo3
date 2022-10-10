@@ -20,9 +20,9 @@ pip install whatlang-pyo3
 ```python
 >>> from whatlang import detect
 >>> detect("This is written in English")
-Language: eng - Script: Latin - Confidence: 0.11450955767632877 - Is reliable: false
+"Language: eng - Script: Latin - Confidence: 0.11450955767632877 - Is reliable: false"
 >>> detect.to_iso()
-Language: en - Script: Latin - Confidence: 0.11450955767632877 - Is reliable: false
+"Language: en - Script: Latin - Confidence: 0.11450955767632877 - Is reliable: false"
 ```
 
 ### Detect script
@@ -31,4 +31,8 @@ Language: en - Script: Latin - Confidence: 0.11450955767632877 - Is reliable: fa
 >>> from whatlang import detect_script
 >>> detect_script("This is written in English")
 Name: Latin - Languages: spa, eng, por, ind, fra, deu, jav, vie, ita, tur, pol, ron, hrv, nld, uzb, hun, aze, ces, zul, swe, aka, sna, afr, fin, slk, tgl, tuk, dan, nob, cat, lit, slv, epo, lav, est, lat
+>>> detect_script.name
+"Latin"
+>>> detect_script.langs
+['spa', 'eng', 'por', 'ind', 'fra', 'deu', 'jav', 'vie', 'ita', 'tur', 'pol', 'ron', 'hrv', 'nld', 'uzb', 'hun', 'aze', 'ces', 'zul', 'swe', 'aka', 'sna', 'afr', 'fin', 'slk', 'tgl', 'tuk', 'dan', 'nob', 'cat', 'lit', 'slv', 'epo', 'lav', 'est', 'lat']
 ```
