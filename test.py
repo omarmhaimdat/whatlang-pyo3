@@ -3,7 +3,7 @@ import timeit
 
 def main():
 
-    result = detect("Ĉu vi ne volas eklerni Esperanton? Bonvolu! Estas unu de la plej bonaj aferoj!")
+    result = detect("This is written in English")
     script = detect_script("Ĉu vi ne volas eklerni Esperanton? Bonvolu! Estas unu de la plej bonaj aferoj!")
     print(result)
     print(script)

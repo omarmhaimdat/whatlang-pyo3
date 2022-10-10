@@ -69,6 +69,11 @@ impl PyInfo {
         ))
     }
 
+    /// Convert Language Code to ISO 639-1 code,
+    /// e.g. "en" for English, this method changes the language code
+    /// of the current object.
+    /// https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+    /// # Example: "eng" -> "en"
     fn to_iso(&mut self) {
         self.lang = lang_to_iso639_1(self.lang.as_str()).to_string();
     }
