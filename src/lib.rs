@@ -1,32 +1,101 @@
 use pyo3::prelude::*;
-use whatlang::detect;
+use whatlang::{detect, detect_script};
+
+// convert String to colored String with ANSI escape codes
+pub enum TermColor {
+    Red,
+    Green,
+    Yellow,
+    Blue,
+    Magenta,
+    Cyan,
+    White,
+}
+
+pub fn colorize(text: &str, color: TermColor) -> String {
+    let color_code = match color {
+        TermColor::Red => 31,
+        TermColor::Green => 32,
+        TermColor::Yellow => 33,
+        TermColor::Blue => 34,
+        TermColor::Magenta => 35,
+        TermColor::Cyan => 36,
+        TermColor::White => 37,
+    };
+    format!("\x1b[{}m{}\x1b[0m", color_code, text)
+}
 
 // Create a python enum class similare to whatlang::Lang
-#[pyclass(name = "Info")]
+#[pyclass(name = "Info", dict)]
 struct PyInfo {
     #[pyo3(get)]
     lang: String,
     #[pyo3(get)]
     script: String,
-    #[pyo3(get)]
+    #[pyo3(get, set)]
     confidence: f64,
     #[pyo3(get)]
     is_reliable: bool,
+}
+
+#[pyclass(name = "Script", dict)]
+struct PyScript {
+    #[pyo3(get)]
+    name: String,
+    #[pyo3(get)]
+    langs: Vec<String>,
 }
 
 #[pymethods]
 impl PyInfo {
     fn __str__(&self) -> PyResult<String> {
         Ok(format!(
-            "Language: {} Script: {} Confidence: {} Is reliable: {}",
-            self.lang, self.script, self.confidence, self.is_reliable
+            "{}: {} - {}: {} - {}: {} - {}: {}",
+            colorize("Language", TermColor::Green),
+            self.lang,
+            colorize("Script", TermColor::Blue),
+            self.script,
+            colorize("Confidence", TermColor::Yellow),
+            self.confidence,
+            colorize("Is reliable", TermColor::Magenta),
+            self.is_reliable
         ))
     }
 
     fn __repr__(&self) -> PyResult<String> {
         Ok(format!(
-            "Language: {} Script: {} Confidence: {} Is reliable: {}",
-            self.lang, self.script, self.confidence, self.is_reliable
+            "{}: {} - {}: {} - {}: {} - {}: {}",
+            colorize("Language", TermColor::Green),
+            self.lang,
+            colorize("Script", TermColor::Green),
+            self.script,
+            colorize("Confidence", TermColor::Green),
+            self.confidence,
+            colorize("Is reliable", TermColor::Green),
+            self.is_reliable
+        ))
+    }
+}
+
+#[pymethods]
+impl PyScript {
+    fn __str__(&self) -> PyResult<String> {
+        Ok(format!(
+            "{}: {} - {}: {}",
+            colorize("Name", TermColor::Green),
+            self.name,
+            colorize("Languages", TermColor::Blue),
+            self.langs.join(", ")
+        ))
+    }
+
+    fn __repr__(&self) -> PyResult<String> {
+        Ok(format!(
+            "{}: {} - {}: {}",
+            colorize("Name", TermColor::Green),
+            self.name,
+            colorize("Languages", TermColor::Blue),
+            self.langs.join(", ")
         ))
     }
 }
@@ -93,6 +162,17 @@ fn convert_to_py_info(info: whatlang::Info) -> PyInfo {
     }
 }
 
+fn convert_to_py_script(script: whatlang::Script) -> PyScript {
+    PyScript {
+        name: script.name().to_string(),
+        langs: script
+            .langs()
+            .iter()
+            .map(|l| l.code().to_string())
+            .collect(),
+    }
+}
+
 #[pyfunction]
 #[pyo3(name = "detect")]
 #[pyo3(text_signature = "(text: str) -> Info")]
@@ -101,12 +181,22 @@ fn detect_lang(text: &str) -> PyResult<PyInfo> {
     Ok(convert_to_py_info(info))
 }
 
+#[pyfunction]
+#[pyo3(name = "detect_script")]
+#[pyo3(text_signature = "(text: str) -> Info")]
+fn detect_script_lang(text: &str) -> PyResult<PyScript> {
+    let script = detect_script(text).unwrap();
+    Ok(convert_to_py_script(script))
+}
+
 /// A Python module implemented in Rust.
 #[pymodule]
 #[pyo3(name = "whatlang")]
 fn whatlang_pyo3(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<PyInfo>()?;
     m.add_function(wrap_pyfunction!(detect_lang, m)?)?;
+    m.add_class::<PyScript>()?;
+    m.add_function(wrap_pyfunction!(detect_script_lang, m)?)?;
     Ok(())
 }
 
