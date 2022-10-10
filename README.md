@@ -29,9 +29,9 @@ pip install whatlang-pyo3
 >>> info.script
 "Latin"
 >>> info.confidence
-0.9999999999999999
+0.14716934730038286
 >>> info.is_reliable
-True
+False
 >>> info.to_iso()
 "Language: en - Script: Latin - Confidence: 0.11450955767632877 - Is reliable: false"
 ```
