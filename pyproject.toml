@@ -14,4 +14,7 @@ classifiers = [
 authors = [
     { name = "Omar MHAIMDAT", email = "omarmhaidmat@gmail.com" }
 ]
+license = "MIT"
 
+[tool.poetry]
+readme = "README.md"
