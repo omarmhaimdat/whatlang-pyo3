@@ -64,16 +64,13 @@ impl PyInfo {
 
     fn __repr__(&self) -> PyResult<String> {
         Ok(format!(
-            "{}: {} - {}: {} - {}: {} - {}: {}",
-            colorize("Language", TermColor::Green),
-            self.lang,
-            colorize("Script", TermColor::Green),
-            self.script,
-            colorize("Confidence", TermColor::Green),
-            self.confidence,
-            colorize("Is reliable", TermColor::Green),
-            self.is_reliable
+            "Language: {} - Script: {} - Confidence: {} - Is reliable: {}",
+            self.lang, self.script, self.confidence, self.is_reliable
         ))
+    }
+
+    fn to_iso(&mut self) {
+        self.lang = lang_to_iso639_1(self.lang.as_str()).to_string();
     }
 }
 
@@ -91,10 +88,8 @@ impl PyScript {
 
     fn __repr__(&self) -> PyResult<String> {
         Ok(format!(
-            "{}: {} - {}: {}",
-            colorize("Name", TermColor::Green),
+            "Name: {} - Languages: {}",
             self.name,
-            colorize("Languages", TermColor::Blue),
             self.langs.join(", ")
         ))
     }
@@ -155,7 +150,7 @@ fn lang_to_iso639_1(lang: &str) -> String {
 
 fn convert_to_py_info(info: whatlang::Info) -> PyInfo {
     PyInfo {
-        lang: lang_to_iso639_1(info.lang().code().to_string().as_str()),
+        lang: info.lang().code().to_string(),
         script: info.script().to_string(),
         confidence: info.confidence(),
         is_reliable: info.is_reliable(),
