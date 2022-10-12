@@ -68,3 +68,11 @@ jobs:
         run: |
           pip install --upgrade twine
           twine upload --skip-existing *
+      - name: Create GitHub release # Use the package version as the tag name and use commit as body
+        uses: actions/create-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        with:
+          tag_name: ${{ github.event.release.tag_name }}
+          release_name: ${{ github.event.release.tag_name }}
+          body: ${{ github.event.release.body }}
