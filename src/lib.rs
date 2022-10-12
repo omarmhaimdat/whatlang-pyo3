@@ -1,5 +1,5 @@
 use pyo3::prelude::*;
-use whatlang::{detect, detect_script};
+use whatlang::{detect, detect_lang, detect_script};
 
 // convert String to colored String with ANSI escape codes
 pub enum TermColor {
@@ -44,6 +44,12 @@ struct PyScript {
     name: String,
     #[pyo3(get)]
     langs: Vec<String>,
+}
+
+#[pyclass(name = "Lang")]
+struct PyLang {
+    #[pyo3(get)]
+    lang: String,
 }
 
 #[pymethods]
@@ -97,6 +103,30 @@ impl PyScript {
             self.name,
             self.langs.join(", ")
         ))
+    }
+}
+
+#[pymethods]
+impl PyLang {
+    fn __str__(&self) -> PyResult<String> {
+        Ok(format!(
+            "{}: {}",
+            colorize("Language", TermColor::Green),
+            self.lang
+        ))
+    }
+
+    fn __repr__(&self) -> PyResult<String> {
+        Ok(format!("Language: {}", self.lang))
+    }
+
+    /// Convert Language Code to ISO 639-1 code,
+    /// e.g. "en" for English, this method changes the language code
+    /// of the current object.
+    /// https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+    /// # Example: "eng" -> "en"
+    fn to_iso(&mut self) {
+        self.lang = lang_to_iso639_1(self.lang.as_str()).to_string();
     }
 }
 
@@ -173,10 +203,16 @@ fn convert_to_py_script(script: whatlang::Script) -> PyScript {
     }
 }
 
+fn convert_to_py_lang(lang: whatlang::Lang) -> PyLang {
+    PyLang {
+        lang: lang.code().to_string(),
+    }
+}
+
 #[pyfunction]
 #[pyo3(name = "detect")]
 #[pyo3(text_signature = "(text: str) -> Info")]
-fn detect_lang(text: &str) -> PyResult<PyInfo> {
+fn py_detect(text: &str) -> PyResult<PyInfo> {
     let info = detect(text).unwrap();
     Ok(convert_to_py_info(info))
 }
@@ -184,9 +220,17 @@ fn detect_lang(text: &str) -> PyResult<PyInfo> {
 #[pyfunction]
 #[pyo3(name = "detect_script")]
 #[pyo3(text_signature = "(text: str) -> Info")]
-fn detect_script_lang(text: &str) -> PyResult<PyScript> {
+fn py_detect_script(text: &str) -> PyResult<PyScript> {
     let script = detect_script(text).unwrap();
     Ok(convert_to_py_script(script))
+}
+
+#[pyfunction]
+#[pyo3(name = "detect_lang")]
+#[pyo3(text_signature = "(text: str) -> Lang")]
+fn py_detect_lang(text: &str) -> PyResult<PyLang> {
+    let lang = detect_lang(text).unwrap();
+    Ok(convert_to_py_lang(lang))
 }
 
 /// A Python module implemented in Rust.
@@ -194,9 +238,11 @@ fn detect_script_lang(text: &str) -> PyResult<PyScript> {
 #[pyo3(name = "whatlang")]
 fn whatlang_pyo3(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<PyInfo>()?;
-    m.add_function(wrap_pyfunction!(detect_lang, m)?)?;
+    m.add_function(wrap_pyfunction!(py_detect, m)?)?;
     m.add_class::<PyScript>()?;
-    m.add_function(wrap_pyfunction!(detect_script_lang, m)?)?;
+    m.add_function(wrap_pyfunction!(py_detect_script, m)?)?;
+    m.add_class::<PyLang>()?;
+    m.add_function(wrap_pyfunction!(py_detect_lang, m)?)?;
     Ok(())
 }
 
