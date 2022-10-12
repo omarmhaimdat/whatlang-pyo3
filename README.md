@@ -17,7 +17,7 @@ pip install whatlang-pyo3
 
 ## Usage
 
-### Detect language
+### Detect
 
 ```python
 >>> from whatlang import detect
@@ -36,6 +36,16 @@ pip install whatlang-pyo3
 False
 >>> info.to_iso()
 "Language: en - Script: Latin - Confidence: 0.11450955767632877 - Is reliable: false"
+```
+
+### Detect language
+
+```python
+>>> from whatlang import detect_lang
+>>> detect_lang("This is written in English")
+"eng"
+>>> detect_lang("Ceci est écrit en français")
+"fra"
 ```
 
 ### Detect script
