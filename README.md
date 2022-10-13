@@ -40,6 +40,8 @@ False
 
 ### Detect language
 
+You can also detect the language of a text without the script and the confidence.
+
 ```python
 >>> from whatlang import detect_lang
 >>> detect_lang("This is written in English")
@@ -50,6 +52,9 @@ False
 
 ### Detect script
 
+You can also detect the script of a text without the language and the confidence.
+
+
 ```python
 >>> from whatlang import detect_script
 >>> detect_script("This is written in English")
@@ -59,3 +64,23 @@ Name: Latin - Languages: spa, eng, por, ind, fra, deu, jav, vie, ita, tur, pol, 
 >>> detect_script.langs
 ['spa', 'eng', 'por', 'ind', 'fra', 'deu', 'jav', 'vie', 'ita', 'tur', 'pol', 'ron', 'hrv', 'nld', 'uzb', 'hun', 'aze', 'ces', 'zul', 'swe', 'aka', 'sna', 'afr', 'fin', 'slk', 'tgl', 'tuk', 'dan', 'nob', 'cat', 'lit', 'slv', 'epo', 'lav', 'est', 'lat']
 ```
+
+## Contributing
+
+Contributions are welcome! Please open an issue or a pull request.
+
+### Install maturin
+
+```bash
+pip install maturin
+```
+
+### Build
+
+```bash
+maturin build --release
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
