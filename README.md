@@ -21,17 +21,14 @@ pip install whatlang-pyo3
 
 ```python
 >>> from whatlang import detect
->>> detect("This is written in English")
+>>> info = detect("This is written in English")
 "Language: eng - Script: Latin - Confidence: 0.11450955767632877 - Is reliable: false"
->>> detect("Ceci est écrit en français")
-"Language: fra - Script: Latin - Confidence: 0.14716934730038286 - Is reliable: false"
->>> info = detect("Ceci est écrit en français")
 >>> info.lang
-"fra"
+"eng"
 >>> info.script
 "Latin"
 >>> info.confidence
-0.14716934730038286
+0.11450955767632877
 >>> info.is_reliable
 False
 >>> info.to_iso()
