@@ -83,6 +83,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: wheels/*
-          asset_name: wheels
+          # Unzip the wheels.zip file and upload all wheels as single asset
+          asset_path: wheels.zip
+          asset_name: wheels.zip
           asset_content_type: application/zip
