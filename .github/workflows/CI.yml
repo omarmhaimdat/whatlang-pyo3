@@ -68,23 +68,3 @@ jobs:
         run: |
           pip install --upgrade twine
           twine upload --skip-existing *
-      - name: Create a tag with version in the Cargo.toml file
-        run: |
-          VERSION=$(grep -oP '(?<=^version = ")[^"]+' Cargo.toml)
-          git config --local user.email "omarmhaimdat@gmail.com"
-          git config --local user.name "Omar MHAIMDAT"
-          git tag "v$VERSION"
-          git push --tags
-      - name: Create GitHub release # Use the package version as the tag name and use commit as body
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this Release
-            - ${{ github.event.commits[0].message }}
-          draft: false
-          prerelease: false
