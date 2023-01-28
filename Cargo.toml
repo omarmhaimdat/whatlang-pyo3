@@ -2,6 +2,19 @@
 name = "whatlang-pyo3"
 version = "0.4.0"
 edition = "2021"
+authors = ["Omar MHAIMDAT"]
+description = "Python bindings for whatlang using pyo3"
+license = "MIT"
+repository = "https://github.com/omarmhaimdat/whatlang-pyo3"
+readme = "README.md"
+keywords = [
+    "whatlang",
+    "pyo3",
+    "python",
+    "bindings",
+    "natural language",
+    "language detection",
+]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
