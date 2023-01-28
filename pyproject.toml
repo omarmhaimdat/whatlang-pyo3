@@ -11,6 +11,14 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 
-authors = [
-    { name = "Omar MHAIMDAT", email = "omarmhaidmat@gmail.com" }
-]
+authors = [{ name = "Omar MHAIMDAT", email = "omarmhaidmat@gmail.com" }]
+
+[project.scripts]
+detect = "whatlang:detect"
+detect_lang = "whatlang:detect_lang"
+detect_script = "whatlang:detect_script"
+
+[project.gui-scripts]
+detect = "whatlang:detect"
+detect_lang = "whatlang:detect_lang"
+detect_script = "whatlang:detect_script"

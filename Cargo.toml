@@ -1,6 +1,6 @@
 [package]
 name = "whatlang-pyo3"
-version = "0.3.3"
+version = "0.4.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -9,5 +9,5 @@ name = "whatlang"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.17", features = ["extension-module"] }
+pyo3 = { version = "0.18", features = ["extension-module"] }
 whatlang = "0.16.1"
