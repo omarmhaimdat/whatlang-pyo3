@@ -15,7 +15,7 @@ def compare_batch_with_single_performance():
     # Create a list of 10000 texts
     from whatlang import detect, batch_detect
     import time
-    n = 1_000_000
+    n = 50_000
     texts = ["Ceci est écrit en français"] * n
     print("--------------------------Batch detect--------------------------")
     start = time.perf_counter()

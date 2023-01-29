@@ -10,7 +10,7 @@
     <a href="https://actions-badge.atrox.dev/omarmhaimdat/whatlang-pyo3/goto?ref=master"><img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fomarmhaimdat%2Fwhatlang-pyo3%2Fbadge%3Fref%3Dmaster&style=flat" alt="Build Status" height="18"></a>
   </p>
   <p>
-    <img src="showcase.gif" alt="Showcase">
+    <img src="assets/showcase.gif" alt="Showcase">
   </p>
 </div>
 
@@ -78,6 +78,8 @@ Name: Latin - Languages: spa, eng, por, ind, fra, deu, jav, vie, ita, tur, pol, 
 ### Batch detection
 
 You can also detect the language of a list of texts, and take advantage of the parallelism with the n_jobs parameter.
+
+[![Batch detection](assets/batch.gif)](assets/batch.gif)
 
 ```python
 >>> from whatlang import batch_detect
