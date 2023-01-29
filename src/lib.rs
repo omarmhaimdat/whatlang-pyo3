@@ -1,5 +1,6 @@
 use pyo3::prelude::*;
 use rayon::prelude::*;
+use std::time::Instant;
 use whatlang::{detect, detect_lang, detect_script};
 
 use crate::utils::{colorize, get_progress_bar, lang_to_iso639_1, TermColor};
@@ -137,6 +138,17 @@ fn convert_to_py_lang(lang: whatlang::Lang) -> PyLang {
     }
 }
 
+/// Detect language of a list of texts
+/// # Arguments
+/// * `texts` - A list of texts
+/// * `n_jobs` - Number of cores to use, if <= 0 use all cores
+/// # Example
+/// ```python
+/// >>> from whatlang import batch_detect
+/// >>> texts = ["Hello world", "Bonjour le monde"]
+/// >>> batch_detect(texts, 1)
+/// [Language: eng - Script: Latn - Confidence: 0.999 - Is reliable: true, Language: fra - Script: Latn - Confidence: 0.999 - Is reliable: true]
+/// ```
 fn batch_detect(texts: Vec<&str>, n_jobs: i16) -> Vec<PyInfo> {
     // Get number of cores
     let mut n_cores: usize = num_cpus::get();
@@ -165,23 +177,11 @@ fn batch_detect(texts: Vec<&str>, n_jobs: i16) -> Vec<PyInfo> {
             .collect();
     });
     results
-
-    // if parallel {
-    //     texts
-    //         .into_par_iter()
-    //         .map(|text| convert_to_py_info(detect(text).unwrap()))
-    //         .collect()
-    // } else {
-    //     texts
-    //         .into_iter()
-    //         .map(|text| convert_to_py_info(detect(text).unwrap()))
-    //         .collect()
-    // }
 }
 
 #[pyfunction]
 #[pyo3(name = "detect")]
-#[pyo3(text_signature = "(text: str) -> Info")]
+#[pyo3(text_signature = "(text: str)")]
 fn py_detect(text: &str) -> PyResult<PyInfo> {
     let info = detect(text).unwrap();
     Ok(convert_to_py_info(info))
@@ -189,7 +189,7 @@ fn py_detect(text: &str) -> PyResult<PyInfo> {
 
 #[pyfunction]
 #[pyo3(name = "detect_script")]
-#[pyo3(text_signature = "(text: str) -> Info")]
+#[pyo3(text_signature = "(text: str)")]
 fn py_detect_script(text: &str) -> PyResult<PyScript> {
     let script = detect_script(text).unwrap();
     Ok(convert_to_py_script(script))
@@ -197,7 +197,7 @@ fn py_detect_script(text: &str) -> PyResult<PyScript> {
 
 #[pyfunction]
 #[pyo3(name = "detect_lang")]
-#[pyo3(text_signature = "(text: str) -> Lang")]
+#[pyo3(text_signature = "(text: str)")]
 fn py_detect_lang(text: &str) -> PyResult<PyLang> {
     let lang = detect_lang(text).unwrap();
     Ok(convert_to_py_lang(lang))
