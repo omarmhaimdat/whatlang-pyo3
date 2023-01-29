@@ -1,10 +1,10 @@
 use pyo3::prelude::*;
 use rayon::prelude::*;
-use std::time::Instant;
 use whatlang::{detect, detect_lang, detect_script};
 
 use crate::utils::{colorize, get_progress_bar, lang_to_iso639_1, TermColor};
 
+mod tests;
 mod utils;
 
 // Create a python enum class similare to whatlang::Lang
@@ -74,7 +74,7 @@ impl PyScript {
             "{}: {} - {}: {}",
             colorize("Name", TermColor::Green),
             self.name,
-            colorize("Languages", TermColor::Blue),
+            colorize("Languages", TermColor::Cyan),
             self.langs.join(", ")
         ))
     }
@@ -158,7 +158,7 @@ fn batch_detect(texts: Vec<&str>, n_jobs: i16) -> Vec<PyInfo> {
     let message = format!(
         "{} texts using {} cores",
         texts.len(),
-        format!("{}", colorize(&n_cores.to_string(), TermColor::Green))
+        format!("{}", colorize(&n_cores.to_string(), TermColor::Red))
     );
     let pb = get_progress_bar(texts.len() as u64, message.to_string());
     let mut results = Vec::new();
@@ -223,30 +223,4 @@ fn whatlang_pyo3(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(py_detect_lang, m)?)?;
     m.add_function(wrap_pyfunction!(py_batch_detect, m)?)?;
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use whatlang::{detect, Lang, Script};
-    #[test]
-    fn test_detect() {
-        let text = "This is written in English";
-        let info = detect(text).unwrap();
-        assert_eq!(info.lang(), Lang::Eng);
-    }
-
-    #[test]
-    fn test_script() {
-        let text = "This is written in English";
-        let info = detect(text).unwrap();
-        assert_eq!(info.script(), Script::Latin);
-    }
-
-    #[test]
-    fn test_is_reliable() {
-        let text = "This is written in English";
-        let info = detect(text).unwrap();
-        assert_eq!(info.is_reliable(), true);
-    }
 }

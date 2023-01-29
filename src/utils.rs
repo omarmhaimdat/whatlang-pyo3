@@ -15,7 +15,7 @@ pub(crate) fn get_progress_bar(total: u64, message: String) -> ProgressBar {
     progress_bar.set_message(message);
     progress_bar
 }
-
+#[warn(dead_code)]
 /// convert String to colored String with ANSI escape codes
 pub(crate) enum TermColor {
     Red,
@@ -24,7 +24,6 @@ pub(crate) enum TermColor {
     Blue,
     Magenta,
     Cyan,
-    White,
 }
 
 /// Convert String to colored String with ANSI escape codes
@@ -41,7 +40,6 @@ pub(crate) fn colorize(text: &str, color: TermColor) -> String {
         TermColor::Blue => 34,
         TermColor::Magenta => 35,
         TermColor::Cyan => 36,
-        TermColor::White => 37,
     };
     format!("\x1b[{}m{}\x1b[0m", color_code, text)
 }
