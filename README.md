@@ -75,6 +75,18 @@ Name: Latin - Languages: spa, eng, por, ind, fra, deu, jav, vie, ita, tur, pol, 
 ['spa', 'eng', 'por', 'ind', 'fra', 'deu', 'jav', 'vie', 'ita', 'tur', 'pol', 'ron', 'hrv', 'nld', 'uzb', 'hun', 'aze', 'ces', 'zul', 'swe', 'aka', 'sna', 'afr', 'fin', 'slk', 'tgl', 'tuk', 'dan', 'nob', 'cat', 'lit', 'slv', 'epo', 'lav', 'est', 'lat']
 ```
 
+### Batch detection
+
+You can also detect the language of a list of texts, and take advantage of the parallelism with the n_jobs parameter.
+
+```python
+>>> from whatlang import batch_detect
+>>> batch_detect(["This is written in English", "Ceci est écrit en français"], n_jobs=-1)
+[LanguageInfo(lang='eng', script='Latin', confidence=0.11450955767632877, is_reliable=False), LanguageInfo(lang='fra', script='Latin', confidence=0.11450955767632877, is_reliable=False)]
+```
+
+The performance of the batch detection is much better than the detection of a single text, it can be up to **5 times faster**.
+
 ## Contributing
 
 Contributions are welcome! Please open an issue or a pull request.
