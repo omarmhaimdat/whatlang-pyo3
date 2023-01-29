@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 class Lang:
     def __init__(self, lang: str) -> None: ...
 
@@ -97,5 +99,25 @@ def detect_script(text: str) -> Script:
 
         >>> detect_script('これは日本語のテキストです')
         Script(script='Han')
+    '''
+    ...
+
+def batch_detect(texts: List[str], n_jobs: Optional[int] = -1) -> List[Info]:
+    '''
+    Detect language and script of the texts
+
+    Args:
+        texts: List of texts to detect
+        n_jobs: Number of parallel jobs to run. -1 means using all processors
+
+    Returns:
+        List of Info objects with detected language, script and confidence
+    
+    Raises:
+        ValueError: If texts is empty
+    
+    Example:
+        >>> batch_detect(['This is English text', 'Это русский текст'])
+        [Info(lang='en', script='Latin', confidence=0.96), Info(lang='ru', script='Cyrillic', confidence=0.69)]
     '''
     ...

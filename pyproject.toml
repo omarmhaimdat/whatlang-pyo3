@@ -17,8 +17,10 @@ authors = [{ name = "Omar MHAIMDAT", email = "omarmhaidmat@gmail.com" }]
 detect = "whatlang:detect"
 detect_lang = "whatlang:detect_lang"
 detect_script = "whatlang:detect_script"
+batch_detect = "whatlang:batch_detect"
 
 [project.gui-scripts]
 detect = "whatlang:detect"
 detect_lang = "whatlang:detect_lang"
 detect_script = "whatlang:detect_script"
+batch_detect = "whatlang:batch_detect"

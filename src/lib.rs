@@ -1,29 +1,10 @@
 use pyo3::prelude::*;
+use rayon::prelude::*;
 use whatlang::{detect, detect_lang, detect_script};
 
-// convert String to colored String with ANSI escape codes
-pub enum TermColor {
-    Red,
-    Green,
-    Yellow,
-    Blue,
-    Magenta,
-    Cyan,
-    White,
-}
+use crate::utils::{colorize, get_progress_bar, lang_to_iso639_1, TermColor};
 
-pub fn colorize(text: &str, color: TermColor) -> String {
-    let color_code = match color {
-        TermColor::Red => 31,
-        TermColor::Green => 32,
-        TermColor::Yellow => 33,
-        TermColor::Blue => 34,
-        TermColor::Magenta => 35,
-        TermColor::Cyan => 36,
-        TermColor::White => 37,
-    };
-    format!("\x1b[{}m{}\x1b[0m", color_code, text)
-}
+mod utils;
 
 // Create a python enum class similare to whatlang::Lang
 #[pyclass(name = "Info", dict)]
@@ -130,59 +111,6 @@ impl PyLang {
     }
 }
 
-fn lang_to_iso639_1(lang: &str) -> String {
-    // convert whatlang::Lang code to iso639-1 code
-    match lang {
-        "afr" => "af",
-        "ara" => "ar",
-        "bul" => "bg",
-        "bos" => "bs",
-        "cat" => "ca",
-        "ces" => "cs",
-        "dan" => "da",
-        "deu" => "de",
-        "ell" => "el",
-        "eng" => "en",
-        "epo" => "eo",
-        "est" => "et",
-        "eus" => "eu",
-        "fin" => "fi",
-        "fra" => "fr",
-        "glg" => "gl",
-        "heb" => "he",
-        "hin" => "hi",
-        "hrv" => "hr",
-        "hun" => "hu",
-        "ind" => "id",
-        "ile" => "is",
-        "ita" => "it",
-        "jpn" => "ja",
-        "kor" => "ko",
-        "lat" => "la",
-        "lit" => "lt",
-        "lav" => "lv",
-        "mkd" => "mk",
-        "mlt" => "mt",
-        "nld" => "nl",
-        "nob" => "nb",
-        "nno" => "nn",
-        "pol" => "pl",
-        "por" => "pt",
-        "rum" => "ro",
-        "rus" => "ru",
-        "slk" => "sk",
-        "slv" => "sl",
-        "spa" => "es",
-        "swe" => "sv",
-        "tel" => "te",
-        "tur" => "tr",
-        "ukr" => "uk",
-        "vie" => "vi",
-        _ => "unknown",
-    }
-    .to_string()
-}
-
 fn convert_to_py_info(info: whatlang::Info) -> PyInfo {
     PyInfo {
         lang: info.lang().code().to_string(),
@@ -209,6 +137,48 @@ fn convert_to_py_lang(lang: whatlang::Lang) -> PyLang {
     }
 }
 
+fn batch_detect(texts: Vec<&str>, n_jobs: i16) -> Vec<PyInfo> {
+    // Get number of cores
+    let mut n_cores: usize = num_cpus::get();
+    if n_jobs > 0 && n_jobs < n_cores as i16 {
+        n_cores = n_jobs as usize;
+    }
+    let message = format!(
+        "{} texts using {} cores",
+        texts.len(),
+        format!("{}", colorize(&n_cores.to_string(), TermColor::Green))
+    );
+    let pb = get_progress_bar(texts.len() as u64, message.to_string());
+    let mut results = Vec::new();
+    let pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(n_cores)
+        .build()
+        .unwrap();
+    pool.install(|| {
+        results = texts
+            .into_par_iter()
+            .map(|text| {
+                let info = detect(text).unwrap();
+                pb.inc(1);
+                convert_to_py_info(info)
+            })
+            .collect();
+    });
+    results
+
+    // if parallel {
+    //     texts
+    //         .into_par_iter()
+    //         .map(|text| convert_to_py_info(detect(text).unwrap()))
+    //         .collect()
+    // } else {
+    //     texts
+    //         .into_iter()
+    //         .map(|text| convert_to_py_info(detect(text).unwrap()))
+    //         .collect()
+    // }
+}
+
 #[pyfunction]
 #[pyo3(name = "detect")]
 #[pyo3(text_signature = "(text: str) -> Info")]
@@ -233,6 +203,14 @@ fn py_detect_lang(text: &str) -> PyResult<PyLang> {
     Ok(convert_to_py_lang(lang))
 }
 
+#[pyfunction]
+#[pyo3(name = "batch_detect")]
+#[pyo3(text_signature = "(texts, n_jobs = -1)")]
+fn py_batch_detect(texts: Vec<&str>, n_jobs: Option<i16>) -> PyResult<Vec<PyInfo>> {
+    let n_jobs = n_jobs.unwrap_or(-1);
+    Ok(batch_detect(texts, n_jobs))
+}
+
 /// A Python module implemented in Rust.
 #[pymodule]
 #[pyo3(name = "whatlang")]
@@ -243,6 +221,7 @@ fn whatlang_pyo3(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(py_detect_script, m)?)?;
     m.add_class::<PyLang>()?;
     m.add_function(wrap_pyfunction!(py_detect_lang, m)?)?;
+    m.add_function(wrap_pyfunction!(py_batch_detect, m)?)?;
     Ok(())
 }
 
