@@ -1,11 +1,25 @@
-# Python Binding for WhatLang
+<div align="center">
+  <h1>WhatLang ⚡ </h1>
+  <p>
+    <strong>Python Binding for WhatLang, a blazing fast language detection library</strong>
+  </p>
+  <p>
+    <a href="https://badge.fury.io/py/whatlang-pyo3"><img src="https://badge.fury.io/py/whatlang-pyo3.svg" alt="PyPI version" height="18"></a>
+    <a href="https://pypi.org/project/whatlang-pyo3/"><img src="https://img.shields.io/pypi/l" alt="License" height="18"></a>
+    <a href="https://pypi.org/project/whatlang-pyo3/"><img src="https://img.shields.io/pypi/dm/whatlang-pyo3" alt="PyPI - Downloads" height="18"></a>
+    <a href="https://actions-badge.atrox.dev/omarmhaimdat/whatlang-pyo3/goto?ref=master"><img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fomarmhaimdat%2Fwhatlang-pyo3%2Fbadge%3Fref%3Dmaster&style=flat" alt="Build Status" height="18"></a>
+  </p>
+  <p>
+    <img src="showcase.gif" alt="Showcase">
+  </p>
+</div>
 
-
+<!-- 
 [![PyPI version](https://badge.fury.io/py/whatlang-pyo3.svg)](https://badge.fury.io/py/whatlang-pyo3)
 ![License](https://img.shields.io/pypi/l) ![PyPI - Downloads](https://img.shields.io/pypi/dm/whatlang-pyo3)
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fomarmhaimdat%2Fwhatlang-pyo3%2Fbadge%3Fref%3Dmaster&style=flat)](https://actions-badge.atrox.dev/omarmhaimdat/whatlang-pyo3/goto?ref=master)
 
-![Showcase](showcase.gif)
+![Showcase](showcase.gif) -->
 
 WhatLang is a Python library for detecting the language of a text. It is based on the [WhatLang](https://github.com/greyblake/whatlang-rs) Rust library.
 
@@ -51,7 +65,6 @@ You can also detect the language of a text without the script and the confidence
 
 You can also detect the script of a text without the language and the confidence.
 
-
 ```python
 >>> from whatlang import detect_script
 >>> detect_script("This is written in English")
@@ -67,6 +80,8 @@ Name: Latin - Languages: spa, eng, por, ind, fra, deu, jav, vie, ita, tur, pol, 
 Contributions are welcome! Please open an issue or a pull request.
 
 ### Install maturin
+
+We use maturin for the development of this library.
 
 ```bash
 pip install maturin
