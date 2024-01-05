@@ -5,7 +5,8 @@
   </p>
   <p>
     <a href="https://badge.fury.io/py/whatlang-pyo3"><img src="https://badge.fury.io/py/whatlang-pyo3.svg" alt="PyPI version" height="18"></a>
-    <a href="https://pypi.org/project/whatlang-pyo3/"><img src="https://img.shields.io/pypi/l" alt="License" height="18"></a>
+    <a href="https://pypi.org/project/whatlang-pyo3/"><img src="https://img.shields.io/github/license/omarmhaimdat/whatlang-pyo3
+" alt="License" height="18"></a>
     <a href="https://pypi.org/project/whatlang-pyo3/"><img src="https://img.shields.io/pypi/dm/whatlang-pyo3" alt="PyPI - Downloads" height="18"></a>
     <a href="https://actions-badge.atrox.dev/omarmhaimdat/whatlang-pyo3/goto?ref=master"><img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fomarmhaimdat%2Fwhatlang-pyo3%2Fbadge%3Fref%3Dmaster&style=flat" alt="Build Status" height="18"></a>
   </p>
