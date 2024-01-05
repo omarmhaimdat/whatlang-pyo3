@@ -7,6 +7,9 @@ class Lang:
 
     def __repr__(self) -> str: ...
 
+    @property
+    def iso(self) -> str: ...
+
     def to_iso(self) -> None: ...
 
 class Info:

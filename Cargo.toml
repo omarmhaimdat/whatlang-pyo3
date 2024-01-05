@@ -1,6 +1,6 @@
 [package]
 name = "whatlang-pyo3"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 authors = ["Omar MHAIMDAT"]
 description = "Python bindings for whatlang using pyo3"
@@ -23,7 +23,9 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.18", features = ["extension-module"] }
-whatlang = "0.16.1"
+whatlang = "0.16.4"
 rayon = "1.5.1"
 num_cpus = "1.13.0"
 indicatif = "0.17.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"

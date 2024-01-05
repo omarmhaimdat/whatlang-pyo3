@@ -38,7 +38,7 @@ class TestWhatlang(unittest.TestCase):
         end = time.perf_counter()
         batch = end - start
         print(f"Batch detect for {n} texts took {batch} seconds")
-        print("--------------------------Single detect--------------------------\n")
+        print("--------------------------Single detect-------------------------")
         start = time.perf_counter()
         for text in texts:
             detect(text)

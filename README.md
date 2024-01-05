@@ -59,6 +59,8 @@ You can also detect the language of a text without the script and the confidence
 "eng"
 >>> detect_lang("Ceci est écrit en français")
 "fra"
+>>> detect_lang("Ceci est écrit en français").iso
+"fr"
 ```
 
 ### Detect script

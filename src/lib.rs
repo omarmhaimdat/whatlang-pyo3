@@ -4,21 +4,10 @@ use whatlang::{detect, detect_lang, detect_script};
 
 use crate::utils::{colorize, get_progress_bar, lang_to_iso639_1, TermColor};
 
+mod extensions;
 mod tests;
 mod utils;
 
-// Create a python enum class similare to whatlang::Lang
-#[pyclass(name = "Info", dict)]
-struct PyInfo {
-    #[pyo3(get)]
-    lang: String,
-    #[pyo3(get)]
-    script: String,
-    #[pyo3(get, set)]
-    confidence: f64,
-    #[pyo3(get)]
-    is_reliable: bool,
-}
 
 #[pyclass(name = "Script", dict)]
 struct PyScript {
@@ -28,10 +17,25 @@ struct PyScript {
     langs: Vec<String>,
 }
 
+#[derive(Debug, Clone)]
 #[pyclass(name = "Lang")]
 struct PyLang {
     #[pyo3(get)]
     lang: String,
+}
+
+// Create a python enum class similare to whatlang::Lang
+#[derive(Clone, Debug)]
+#[pyclass(name = "Info", dict)]
+struct PyInfo {
+    #[pyo3(get)]
+    __lang: PyLang,
+    #[pyo3(get)]
+    script: String,
+    #[pyo3(get, set)]
+    confidence: f64,
+    #[pyo3(get)]
+    is_reliable: bool,
 }
 
 #[pymethods]
@@ -40,7 +44,7 @@ impl PyInfo {
         Ok(format!(
             "{}: {} - {}: {} - {}: {} - {}: {}",
             colorize("Language", TermColor::Green),
-            self.lang,
+            self.__lang.lang,
             colorize("Script", TermColor::Blue),
             self.script,
             colorize("Confidence", TermColor::Yellow),
@@ -53,8 +57,13 @@ impl PyInfo {
     fn __repr__(&self) -> PyResult<String> {
         Ok(format!(
             "Language: {} - Script: {} - Confidence: {} - Is reliable: {}",
-            self.lang, self.script, self.confidence, self.is_reliable
+            self.__lang.lang, self.script, self.confidence, self.is_reliable
         ))
+    }
+
+    #[getter]
+    fn lang(&self) -> PyResult<String> {
+        Ok(self.__lang.lang.clone())
     }
 
     /// Convert Language Code to ISO 639-1 code,
@@ -63,7 +72,11 @@ impl PyInfo {
     /// https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
     /// # Example: "eng" -> "en"
     fn to_iso(&mut self) {
-        self.lang = lang_to_iso639_1(self.lang.as_str()).to_string();
+        // Check if the language code is already ISO 639-1
+        if self.__lang.lang.len() == 2 {
+            return;
+        }
+        self.__lang.lang = lang_to_iso639_1(self.__lang.lang.as_str()).to_string();
     }
 }
 
@@ -91,15 +104,16 @@ impl PyScript {
 #[pymethods]
 impl PyLang {
     fn __str__(&self) -> PyResult<String> {
-        Ok(format!(
-            "{}: {}",
-            colorize("Language", TermColor::Green),
-            self.lang
-        ))
+        Ok(format!("{}", self.lang))
     }
 
     fn __repr__(&self) -> PyResult<String> {
         Ok(format!("Language: {}", self.lang))
+    }
+
+    #[getter]
+    fn iso(&self) -> PyResult<String> {
+        Ok(lang_to_iso639_1(self.lang.as_str()).to_string())
     }
 
     /// Convert Language Code to ISO 639-1 code,
@@ -108,13 +122,19 @@ impl PyLang {
     /// https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
     /// # Example: "eng" -> "en"
     fn to_iso(&mut self) {
+        // Check if the language code is already ISO 639-1
+        if self.lang.len() == 2 {
+            return;
+        }
         self.lang = lang_to_iso639_1(self.lang.as_str()).to_string();
     }
 }
 
 fn convert_to_py_info(info: whatlang::Info) -> PyInfo {
     PyInfo {
-        lang: info.lang().code().to_string(),
+        __lang: PyLang {
+            lang: info.lang().code().to_string(),
+        },
         script: info.script().to_string(),
         confidence: info.confidence(),
         is_reliable: info.is_reliable(),
@@ -134,7 +154,7 @@ fn convert_to_py_script(script: whatlang::Script) -> PyScript {
 
 fn convert_to_py_lang(lang: whatlang::Lang) -> PyLang {
     PyLang {
-        lang: lang.code().to_string(),
+        lang: lang.code().to_string()
     }
 }
 
@@ -183,24 +203,45 @@ fn batch_detect(texts: Vec<&str>, n_jobs: i16) -> Vec<PyInfo> {
 #[pyo3(name = "detect")]
 #[pyo3(text_signature = "(text: str)")]
 fn py_detect(text: &str) -> PyResult<PyInfo> {
-    let info = detect(text).unwrap();
-    Ok(convert_to_py_info(info))
+    let info = detect(text);
+    match info {
+        None => {
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "Language could not be detected",
+            ))
+        }
+        Some(info) => return Ok(convert_to_py_info(info)),
+    }
 }
 
 #[pyfunction]
 #[pyo3(name = "detect_script")]
 #[pyo3(text_signature = "(text: str)")]
 fn py_detect_script(text: &str) -> PyResult<PyScript> {
-    let script = detect_script(text).unwrap();
-    Ok(convert_to_py_script(script))
+    let script = detect_script(text);
+    match script {
+        Some(script) => return Ok(convert_to_py_script(script)),
+        None => {
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "Script could not be detected",
+            ))
+        }
+    }
 }
 
 #[pyfunction]
 #[pyo3(name = "detect_lang")]
 #[pyo3(text_signature = "(text: str)")]
 fn py_detect_lang(text: &str) -> PyResult<PyLang> {
-    let lang = detect_lang(text).unwrap();
-    Ok(convert_to_py_lang(lang))
+    let lang = detect_lang(text);
+    match lang {
+        Some(lang) => return Ok(convert_to_py_lang(lang)),
+        None => {
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "Language could not be detected",
+            ))
+        }
+    }
 }
 
 #[pyfunction]
@@ -215,6 +256,12 @@ fn py_batch_detect(texts: Vec<&str>, n_jobs: Option<i16>) -> PyResult<Vec<PyInfo
 #[pymodule]
 #[pyo3(name = "whatlang")]
 fn whatlang_pyo3(_py: Python, m: &PyModule) -> PyResult<()> {
+
+    m.add("__version__", env!("CARGO_PKG_VERSION"))?;
+    m.add("__author__", env!("CARGO_PKG_AUTHORS"))?;
+    m.add("__description__", env!("CARGO_PKG_DESCRIPTION"))?;
+    m.add("__license__", env!("CARGO_PKG_LICENSE"))?;
+
     m.add_class::<PyInfo>()?;
     m.add_function(wrap_pyfunction!(py_detect, m)?)?;
     m.add_class::<PyScript>()?;
