@@ -4,7 +4,6 @@ use whatlang::{detect, detect_lang, detect_script};
 
 use crate::utils::{colorize, get_progress_bar, lang_to_iso639_1, TermColor};
 
-mod extensions;
 mod tests;
 mod utils;
 
